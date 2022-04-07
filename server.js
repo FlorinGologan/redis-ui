@@ -22,7 +22,7 @@ app.get('/deleteAll', async (req, res, next) => {
 
 app.get('/*', async (req, res, next) => {
 
-  const pattern = `*${req.query.pattern}*` || '*';
+  const pattern = req.query.pattern ? `*${ req.query.pattern }*` : '*';
   console.log('pattern', req.query.pattern);
 
   let out = `Pattern: <b>${ pattern }</b>`;
