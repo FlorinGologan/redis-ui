@@ -10,9 +10,21 @@ const app = express();
 // await redis.set('mykey', '123123');
 // await redis.get('mykey');
 
-app.get('/deleteAll', async (req, res, next) => {
+app.get('/delete', async (req, res, next) => {
   let out = '';
-  const keys = await redis.keys('*');
+  if (!req.query.pattern) {
+    out += '<br>================================<br>';
+    out += `<b>pattern</b> parameter is missing`;
+    out += '<br>================================<br>';
+    out += `${ req.url }?pattern=*`;
+
+    return res.send(out).end();
+  }
+
+  const pattern = `*${ req.query.pattern }*`;
+  console.log('DELETE  - pattern', pattern);
+
+  const keys = await redis.keys(pattern);
   for (const key of keys) {
     redis.del(key);
     out += '<br>================================<br>';
@@ -20,13 +32,13 @@ app.get('/deleteAll', async (req, res, next) => {
     out += '<br>================================<br>';
   }
 
-  return res.send(out).status(200).end();
+  return res.send(out).end();
 });
 
-app.get('/*', async (req, res, next) => {
+app.get('/list', async (req, res, next) => {
 
   const pattern = req.query.pattern ? `*${ req.query.pattern }*` : '*';
-  console.log('pattern', pattern);
+  console.log('LIST  - pattern', pattern);
 
   let out = `Pattern: <b>${ pattern }</b>`;
 
@@ -37,7 +49,7 @@ app.get('/*', async (req, res, next) => {
     out += '<br>================================<br>';
   }
 
-  return res.send(out).status(200).end();
+  return res.send(out).end();
 });
 
 const port = 3011;
