@@ -1,7 +1,10 @@
 import Redis from 'ioredis';
 import express from 'express';
 
-const redis = new Redis();
+const redis = new Redis({
+  host: process.env.REDIS_HOST || 'localhost',
+  port: process.env.REDIS_PORT || 6379
+});
 const app = express();
 
 // await redis.set('mykey', '123123');
@@ -23,7 +26,7 @@ app.get('/deleteAll', async (req, res, next) => {
 app.get('/*', async (req, res, next) => {
 
   const pattern = req.query.pattern ? `*${ req.query.pattern }*` : '*';
-  console.log('pattern', req.query.pattern);
+  console.log('pattern', pattern);
 
   let out = `Pattern: <b>${ pattern }</b>`;
 
